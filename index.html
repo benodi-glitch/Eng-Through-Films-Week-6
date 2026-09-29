@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Encounter — Critical Thinking Discussion Worksheet</title>
+<style>
+  :root {
+    --navy: #292C74;
+    --navy-dark: #1d1f54;
+    --gold: #EABD2C;
+    --bg: #f7f7f9;
+    --card: #ffffff;
+    --border: #e2e2e6;
+    --text: #1a1a1a;
+    --muted: #666a75;
+    --accent-bg: #f2f1fb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171b; --card: #212227; --border: #34363c; --text: #eceef2; --muted: #a3a6b0; --accent-bg: #23243a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171b; --card: #212227; --border: #34363c; --text: #eceef2; --muted: #a3a6b0; --accent-bg: #23243a;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 70px; }
+
+  header.page-head { border-bottom: 4px solid var(--gold); padding-bottom: 18px; margin-bottom: 24px; }
+  header.page-head h1 { margin: 0 0 4px; font-size: clamp(22px, 4vw, 28px); color: var(--navy); }
+  header.page-head .sub { margin: 0; color: var(--muted); font-size: 14px; }
+
+  .meta-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px;
+  }
+  @media (max-width: 520px) { .meta-card { grid-template-columns: 1fr; } }
+  .meta-card label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .meta-card input {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px;
+    background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit;
+  }
+
+  .lock-note {
+    background: var(--accent-bg); border: 1px solid var(--border); border-left: 4px solid var(--navy);
+    border-radius: 8px; padding: 10px 14px; margin-bottom: 22px; font-size: 12.5px; color: var(--muted);
+  }
+
+  .progress-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; }
+  .progress-track { flex: 1; height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width .3s ease; }
+  .progress-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  section.block { margin-bottom: 34px; }
+  .block-head { margin-bottom: 6px; }
+  .block-head .tag { display: inline-block; background: var(--accent-bg); color: var(--navy); font-weight: 700;
+    font-size: 11px; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; margin-bottom: 8px; }
+  .block-head h2 { margin: 0 0 6px; font-size: 19px; color: var(--navy); }
+  .block-head p.note { margin: 0 0 16px; color: var(--muted); font-size: 13.5px; }
+
+  .q-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 14px;
+  }
+  .q-card .q-num { font-weight: 700; color: var(--gold); font-size: 13px; margin-bottom: 4px; display: block; }
+  .q-card .q-text { font-size: 15px; margin: 0 0 6px; }
+  .q-card .q-hint { font-size: 12.5px; color: var(--muted); margin: 0 0 10px; font-style: italic; }
+  .q-card textarea {
+    width: 100%; min-height: 90px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit; resize: vertical;
+    -webkit-user-select: text; user-select: text;
+  }
+  .q-card textarea:focus { outline: 2px solid var(--navy); outline-offset: 1px; }
+  .q-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; gap: 8px; flex-wrap: wrap; }
+  .word-count { font-size: 11.5px; color: var(--muted); }
+  .word-count.ok { color: #2e7d32; }
+  .block-msg { font-size: 11.5px; color: #b8860b; opacity: 0; transition: opacity .2s ease; }
+  .block-msg.show { opacity: 1; }
+
+  .print-mirror { display: none; white-space: pre-wrap; word-wrap: break-word; font-size: 13px; padding: 6px 2px; min-height: 1.4em; }
+
+  .toolbar {
+    position: sticky; bottom: 0; display: flex; gap: 10px; justify-content: flex-end;
+    padding: 12px 0; background: linear-gradient(to top, var(--bg) 70%, transparent);
+    margin-top: 10px; flex-wrap: wrap;
+  }
+  button {
+    border-radius: 9px; padding: 10px 18px; font-size: 14px; cursor: pointer; border: none; font-family: inherit; font-weight: 600;
+  }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-primary:hover { background: var(--navy-dark); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .save-status { font-size: 12px; color: var(--muted); align-self: center; margin-right: auto; }
+
+  footer.foot { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
+
+  @page { size: auto; margin: 14mm 12mm; }
+  @media print {
+    html, body { background: #fff; height: auto; }
+    .wrap { max-width: 100%; padding: 0; margin: 0; }
+    .toolbar, .progress-wrap, .lock-note { display: none !important; }
+    .meta-card { grid-template-columns: 1fr 1fr; box-shadow: none; }
+    .q-card, .meta-card, .block-head { break-inside: avoid; page-break-inside: avoid; border-color: #ccc; }
+    .q-card { box-shadow: none; }
+    textarea { display: none !important; }
+    .print-mirror { display: block !important; border: 1px solid #bbb; border-radius: 6px; background: #fafafa; }
+    .print-mirror:empty::after { content: "(no answer written)"; color: #999; font-style: italic; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-head">
+    <h1>The Encounter — Critical Thinking Discussion</h1>
+    <p class="sub">English through Films · Weeks 5–6 · Narrative &amp; Themes, American Culture &amp; Language</p>
+  </header>
+
+  <div class="meta-card">
+    <div>
+      <label for="studentName">Name</label>
+      <input type="text" id="studentName" placeholder="Your name">
+    </div>
+    <div>
+      <label for="studentNim">NIM</label>
+      <input type="text" id="studentNim" placeholder="Student ID">
+    </div>
+  </div>
+
+  <div class="lock-note">Copy/paste and drag-and-drop are disabled in the answer boxes below — please type your own responses directly.</div>
+
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">0 / 12 answered</span>
+  </div>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tag">Part 1 · Week 5</span>
+      <h2>Narrative Structure, Themes &amp; an Alternate Ending</h2>
+      <p class="note">Aim for 3–5 sentences per answer. There's no single correct response — the goal is a clear, well-reasoned argument backed by specific evidence from the film.</p>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 1</span>
+      <p class="q-text">What do you think is the central theme of <em>The Encounter</em> (for example: redemption, forgiveness, second chances)? Explain your choice using one specific scene as evidence.</p>
+      <textarea data-key="q1" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q1"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q1">0 words</span><span class="block-msg" data-msg-for="q1"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 2</span>
+      <p class="q-text">Nick's attitude seems to shift somewhere over the course of the film — from resistant to more reflective. At what moment do you think this shift begins? Why that moment?</p>
+      <textarea data-key="q2" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q2"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q2">0 words</span><span class="block-msg" data-msg-for="q2"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 3</span>
+      <p class="q-text">Choose two characters at the diner. Compare how they each respond to Jesus' offer — what does the difference between their reactions reveal about the film's themes?</p>
+      <p class="q-hint">Hint: consider what each character seems to want or fear.</p>
+      <textarea data-key="q3" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q3"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q3">0 words</span><span class="block-msg" data-msg-for="q3"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 4</span>
+      <p class="q-text">The film sometimes hints at what's coming before it happens — a look, a line, a small detail. Identify one moment you noticed (or now realize, looking back) that quietly hinted at something later in the story. What did it hint at?</p>
+      <textarea data-key="q4" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q4"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q4">0 words</span><span class="block-msg" data-msg-for="q4"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 5 — Creative Task</span>
+      <p class="q-text">Imagine the story continues about 10 minutes past where the film ends. Write a short alternate ending (roughly 5–8 sentences) that resolves at least one character's arc differently than the original.</p>
+      <textarea data-key="q5" placeholder="Write your alternate ending here..." style="min-height:130px"></textarea>
+      <div class="print-mirror" data-mirror-for="q5"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q5">0 words</span><span class="block-msg" data-msg-for="q5"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 6</span>
+      <p class="q-text">Your ending is different from the original — but does it still feel logically consistent with the story and characters you've watched? Explain why or why not.</p>
+      <textarea data-key="q6" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q6"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q6">0 words</span><span class="block-msg" data-msg-for="q6"></span></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tag">Part 2 · Week 6</span>
+      <h2>American Colloquialisms, Culture &amp; Screenwriting</h2>
+      <p class="note">Same length guide as Part 1 — a few clear sentences with a specific example beats a long vague answer.</p>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 7</span>
+      <p class="q-text">Choose two colloquial expressions or idioms from the film (for example: "You've got to be kidding me," "I'll tell you what," "pass up"). For each, explain what it means and describe a real situation where you could naturally use it yourself.</p>
+      <textarea data-key="q7" placeholder="Type your answer here..." style="min-height:110px"></textarea>
+      <div class="print-mirror" data-mirror-for="q7"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q7">0 words</span><span class="block-msg" data-msg-for="q7"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 8</span>
+      <p class="q-text">The film is set at a small-town American roadside diner during a storm. What details — dialogue, setting, or how characters behave — reflect something specific about American culture or social norms? Give at least one concrete example.</p>
+      <textarea data-key="q8" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q8"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q8">0 words</span><span class="block-msg" data-msg-for="q8"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 9</span>
+      <p class="q-text">Screenwriters use specific terms to describe story techniques (for example: plot twist, character arc, dialogue-driven scene, foreshadowing). Pick ONE term and explain — using a specific moment from <em>The Encounter</em> — how the film uses that technique.</p>
+      <textarea data-key="q9" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q9"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q9">0 words</span><span class="block-msg" data-msg-for="q9"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 10</span>
+      <p class="q-text">Catherine and Hank's conversations shift tone several times — polite, sarcastic, frustrated. Choose one exchange between them and describe how the tone shift is created through word choice, not just what happens in the plot.</p>
+      <textarea data-key="q10" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q10"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q10">0 words</span><span class="block-msg" data-msg-for="q10"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 11</span>
+      <p class="q-text">Pick one American idiom or expression from the film and compare it to an equivalent expression in your own language or culture. Is the meaning the same, or does something get lost or changed in translation?</p>
+      <textarea data-key="q11" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q11"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q11">0 words</span><span class="block-msg" data-msg-for="q11"></span></div>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num">Question 12</span>
+      <p class="q-text">Did you notice any moment where a character stayed quiet, paused, or didn't answer right away? What effect did that silence have on the scene?</p>
+      <textarea data-key="q12" placeholder="Type your answer here..."></textarea>
+      <div class="print-mirror" data-mirror-for="q12"></div>
+      <div class="q-footer"><span class="word-count" data-count-for="q12">0 words</span><span class="block-msg" data-msg-for="q12"></span></div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <span class="save-status" id="saveStatus">Not saved yet</span>
+    <button class="btn-ghost" id="printBtn" type="button">Print / Save as PDF</button>
+    <button class="btn-ghost" id="clearBtn" type="button">Clear All</button>
+  </div>
+
+  <footer class="foot">English through Films · Discussion Worksheet · Answers are saved automatically in this browser</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var STORAGE_KEY = "encounter_discussion_worksheet_v2";
+  var totalQuestions = 12;
+  var metaFields = ["studentName", "studentNim"];
+
+  function safeGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function safeSet(key, val) {
+    try { localStorage.setItem(key, val); return true; } catch (e) { return false; }
+  }
+  function safeRemove(key) {
+    try { localStorage.removeItem(key); } catch (e) {}
+  }
+
+  function loadState() {
+    var raw = safeGet(STORAGE_KEY);
+    if (!raw) return {};
+    try { return JSON.parse(raw); } catch (e) { return {}; }
+  }
+
+  function countWords(str) {
+    var trimmed = (str || "").trim();
+    if (!trimmed) return 0;
+    return trimmed.split(/\s+/).length;
+  }
+
+  function updateProgress() {
+    var answered = 0;
+    for (var i = 1; i <= totalQuestions; i++) {
+      var el = document.querySelector('[data-key="q' + i + '"]');
+      if (el && el.value.trim().length > 0) answered++;
+    }
+    var pct = Math.round((answered / totalQuestions) * 100);
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressLabel").textContent = answered + " / " + totalQuestions + " answered";
+  }
+
+  function updateWordCount(key) {
+    var el = document.querySelector('[data-key="' + key + '"]');
+    var label = document.querySelector('[data-count-for="' + key + '"]');
+    if (!el || !label) return;
+    var n = countWords(el.value);
+    label.textContent = n + (n === 1 ? " word" : " words");
+    label.classList.toggle("ok", n >= 20);
+  }
+
+  function flashMessage(key, text) {
+    var msg = document.querySelector('[data-msg-for="' + key + '"]');
+    if (!msg) return;
+    msg.textContent = text;
+    msg.classList.add("show");
+    if (msg._t) clearTimeout(msg._t);
+    msg._t = setTimeout(function () { msg.classList.remove("show"); }, 2200);
+  }
+
+  var saveTimer = null;
+  function saveState() {
+    var state = {};
+    metaFields.forEach(function (key) {
+      var el = document.getElementById(key);
+      state[key] = el ? el.value : "";
+    });
+    for (var i = 1; i <= totalQuestions; i++) {
+      var key = "q" + i;
+      var el = document.querySelector('[data-key="' + key + '"]');
+      state[key] = el ? el.value : "";
+    }
+    var ok = safeSet(STORAGE_KEY, JSON.stringify(state));
+    var statusEl = document.getElementById("saveStatus");
+    if (ok) {
+      var now = new Date();
+      statusEl.textContent = "Saved at " + now.toLocaleTimeString();
+    } else {
+      statusEl.textContent = "Could not save in this browser (private/incognito mode?)";
+    }
+  }
+
+  function scheduleSave() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveState, 500);
+  }
+
+  function bindRestrictions(el) {
+    var key = el.getAttribute("data-key");
+    ["copy", "cut", "paste"].forEach(function (evt) {
+      el.addEventListener(evt, function (e) {
+        e.preventDefault();
+        flashMessage(key, evt.charAt(0).toUpperCase() + evt.slice(1) + " is disabled here — please type your answer.");
+      });
+    });
+    ["dragover", "drop", "dragenter"].forEach(function (evt) {
+      el.addEventListener(evt, function (e) {
+        e.preventDefault();
+        flashMessage(key, "Drag-and-drop is disabled here — please type your answer.");
+      });
+    });
+    el.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+      flashMessage(key, "Right-click menu is disabled here — please type your answer.");
+    });
+  }
+
+  function bindFields() {
+    metaFields.forEach(function (key) {
+      var el = document.getElementById(key);
+      if (!el) return;
+      el.addEventListener("input", scheduleSave);
+    });
+    for (var i = 1; i <= totalQuestions; i++) {
+      (function (idx) {
+        var key = "q" + idx;
+        var el = document.querySelector('[data-key="' + key + '"]');
+        if (!el) return;
+        bindRestrictions(el);
+        el.addEventListener("input", function () {
+          updateWordCount(key);
+          updateProgress();
+          scheduleSave();
+        });
+      })(i);
+    }
+  }
+
+  function restoreState() {
+    var state = loadState();
+    metaFields.forEach(function (key) {
+      var el = document.getElementById(key);
+      if (el && typeof state[key] === "string") el.value = state[key];
+    });
+    for (var i = 1; i <= totalQuestions; i++) {
+      var key = "q" + i;
+      var el = document.querySelector('[data-key="' + key + '"]');
+      if (el && typeof state[key] === "string") el.value = state[key];
+      updateWordCount(key);
+    }
+    updateProgress();
+  }
+
+  function syncPrintMirrors() {
+    for (var i = 1; i <= totalQuestions; i++) {
+      var key = "q" + i;
+      var el = document.querySelector('[data-key="' + key + '"]');
+      var mirror = document.querySelector('[data-mirror-for="' + key + '"]');
+      if (el && mirror) mirror.textContent = el.value;
+    }
+    var nameEl = document.getElementById("studentName");
+    var nimEl = document.getElementById("studentNim");
+  }
+
+  window.addEventListener("beforeprint", syncPrintMirrors);
+
+  document.getElementById("printBtn").addEventListener("click", function () {
+    syncPrintMirrors();
+    window.print();
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    if (!window.confirm("Clear all answers on this worksheet? This cannot be undone.")) return;
+    metaFields.forEach(function (key) {
+      var el = document.getElementById(key);
+      if (el) el.value = "";
+    });
+    for (var i = 1; i <= totalQuestions; i++) {
+      var key = "q" + i;
+      var el = document.querySelector('[data-key="' + key + '"]');
+      if (el) el.value = "";
+      updateWordCount(key);
+    }
+    safeRemove(STORAGE_KEY);
+    updateProgress();
+    document.getElementById("saveStatus").textContent = "Cleared";
+  });
+
+  bindFields();
+  restoreState();
+})();
+</script>
+</body>
+</html>
